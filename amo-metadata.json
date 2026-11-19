@@ -1,10 +1,12 @@
 {
-  "categories": ["games-entertainment"],
+  "categories": [
+    "games-entertainment"
+  ],
   "summary": {
     "en-US": "Adds a Chaos Value column (quantity × price, in chaos) to the stash table on wealthyexile.com. Divine prices are converted using a rate worked out from the page. Click a value to copy it."
   },
   "description": {
-    "en-US": "Wealthy Exile shows each stash item's Quantity, Price and Total, but the Total is often in divines. This add-on adds a <b>Chaos Value</b> column next to Total that shows the same value in chaos, so you can compare items at a glance.\n\n<b>Features</b>\n<ul><li>Chaos Value = Quantity × Price, shown in chaos (for example 780c or 1,234c).</li><li>Prices in divines are converted using a divine rate worked out from your own stash page. You can also set your own rate.</li><li>Hover a value to see the working, for example \"65 × 12c = 780c\".</li><li>Click a value to copy the number to your clipboard.</li><li>Keeps up with the site as you sort, filter, search, scroll, switch tabs and re-sync.</li><li>An address bar button, shown only on Wealthy Exile, to turn the column on or off and set a manual divine rate.</li></ul>\n\n<b>Privacy</b>\nThe add-on collects no data and makes no network requests. It only runs on wealthyexile.com and cannot read or change any other website.\n\nThis is an unofficial add-on. It is not affiliated with Wealthy Exile or Grinding Gear Games.\n\nSource code: https://github.com/viexhd/wealthy-exile-chaos-value"
+    "en-US": "Wealthy Exile shows each stash item's Quantity, Price and Total, but the Total is often in divines. This add-on adds a Chaos Value column next to Total that shows the same value in chaos, so you can compare items at a glance.\n\nFeatures\n• Chaos Value = Quantity × Price, shown in chaos (for example 780c or 1,234c).\n• Prices in divines are converted using a divine rate worked out from your own stash page. You can also set your own rate.\n• Hover a value to see the working, for example \"65 × 12c = 780c\".\n• Click a value to copy the number to your clipboard.\n• Keeps up with the site as you sort, filter, search, scroll, switch tabs and re-sync.\n• An address bar button, shown only on Wealthy Exile, to turn the column on or off and set a manual divine rate.\n\nPrivacy\nThe add-on collects no data and makes no network requests. It only runs on wealthyexile.com and cannot read or change any other website.\n\nThis is an unofficial add-on. It is not affiliated with Wealthy Exile or Grinding Gear Games.\n\nSource code: https://github.com/viexhd/wealthy-exile-chaos-value"
   },
   "homepage": {
     "en-US": "https://github.com/viexhd/wealthy-exile-chaos-value"
