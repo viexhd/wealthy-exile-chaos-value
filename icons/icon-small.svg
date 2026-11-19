@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<defs>
+<radialGradient id="coinFace" cx="38%" cy="32%" r="72%"><stop offset="0" stop-color="#F9DC95"/><stop offset="0.55" stop-color="#D99A3A"/><stop offset="1" stop-color="#8A5422"/></radialGradient>
+<linearGradient id="coinRim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBE3A6"/><stop offset="1" stop-color="#5E3714"/></linearGradient>
+</defs>
+<circle cx="64" cy="64" r="62" fill="url(#coinRim)"/>
+<circle cx="64" cy="64" r="51" fill="url(#coinFace)"/>
+<path d="M80 47 A23 23 0 1 0 80 81" fill="none" stroke="#3E2309" stroke-width="15" stroke-linecap="round"/>
+<path d="M88 56 L101 69 M101 56 L88 69" stroke="#3E2309" stroke-width="7" stroke-linecap="round"/>
+</svg>

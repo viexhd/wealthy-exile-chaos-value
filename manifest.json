@@ -6,8 +6,11 @@
   "author": "Isaac Foo Yong Quan",
   "homepage_url": "https://github.com/viexhd/wealthy-exile-chaos-value",
   "icons": {
-    "48": "icons/icon.svg",
-    "96": "icons/icon.svg"
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png",
+    "128": "icons/icon-128.png"
   },
   "permissions": ["storage"],
   "host_permissions": ["*://*.wealthyexile.com/*"],
@@ -20,7 +23,10 @@
   ],
   "page_action": {
     "default_title": "Chaos Value",
-    "default_icon": "icons/icon.svg",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    },
     "default_popup": "popup/popup.html",
     "show_matches": ["*://*.wealthyexile.com/*"]
   },
