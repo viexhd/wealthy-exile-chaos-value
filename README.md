@@ -1,16 +1,33 @@
-# Chaos Value for Wealthy Exile
+<p align="center">
+  <img src="docs/banner.png" alt="Chaos Value: a Firefox add-on for Wealthy Exile that shows what every stash item is worth in chaos, right next to Total" width="100%">
+</p>
 
-[![CI](https://github.com/viexhd/wealthy-exile-chaos-value/actions/workflows/ci.yml/badge.svg)](https://github.com/viexhd/wealthy-exile-chaos-value/actions/workflows/ci.yml)
-[![Latest release](https://img.shields.io/github/v/release/viexhd/wealthy-exile-chaos-value)](https://github.com/viexhd/wealthy-exile-chaos-value/releases/latest)
-[![Licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+<p align="center">
+  <a href="https://github.com/viexhd/wealthy-exile-chaos-value/actions/workflows/ci.yml"><img src="https://github.com/viexhd/wealthy-exile-chaos-value/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/viexhd/wealthy-exile-chaos-value/releases/latest"><img src="https://img.shields.io/github/v/release/viexhd/wealthy-exile-chaos-value?color=d99a3a" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/Firefox-109%2B-ff7139?logo=firefoxbrowser&amp;logoColor=white" alt="Firefox 109 or newer">
+  <img src="https://img.shields.io/badge/data%20collected-none-2ea44f" alt="No data collected">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licence-MIT-blue.svg" alt="Licence: MIT"></a>
+</p>
+
+<p align="center">
+  <a href="#install"><b>Install</b></a> &nbsp;·&nbsp;
+  <a href="#what-it-does"><b>Features</b></a> &nbsp;·&nbsp;
+  <a href="#how-the-divine-rate-is-worked-out"><b>How it works</b></a> &nbsp;·&nbsp;
+  <a href="#privacy"><b>Privacy</b></a>
+</p>
+
+# Chaos Value for Wealthy Exile
 
 A small Firefox extension that adds a **Chaos Value** column to the stash table on [Wealthy Exile](https://wealthyexile.com).
 
 The site shows each item's Quantity, Price and Total, but the Total is often in divines. This extension adds a column to the right of Total that shows the same value in chaos, so you can compare items at a glance.
 
-## Screenshot
+<p align="center">
+  <img src="docs/how-it-works.png" alt="A stash table with Name, Quantity, Price and Total columns, and a new highlighted Chaos Value column on the right. Hovering 780c shows the working: 65 × 12c = 780c" width="100%">
+</p>
 
-> Screenshot coming soon. To add one, save it as `docs/screenshot.png` and replace this line with `![The Chaos Value column on the Wealthy Exile stash page](docs/screenshot.png)`.
+<p align="center"><sub>Example values. The real column takes on the look of the site's own Total column.</sub></p>
 
 ## What it does
 

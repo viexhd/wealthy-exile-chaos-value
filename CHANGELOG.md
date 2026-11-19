@@ -2,6 +2,14 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- New coin icon, exported as PNGs at 16, 32, 48, 96 and 128 px for the toolbar, address bar and Firefox Add-ons listing. A simpler version is used at 16 and 32 px so it stays clear.
+- Firefox Add-ons description is now plain text instead of HTML.
+- README now has a banner, a "how it works" image and quick links.
+
 ## [1.0.0] - 2026-11-19
 
 ### Added
