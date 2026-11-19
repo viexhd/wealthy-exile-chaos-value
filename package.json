@@ -28,6 +28,8 @@
       "package-lock.json",
       "README.md",
       "CHANGELOG.md",
+      "amo-metadata.json",
+      "docs",
       "web-ext-artifacts"
     ]
   },

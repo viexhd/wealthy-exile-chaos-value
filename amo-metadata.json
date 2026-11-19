@@ -1,0 +1,19 @@
+{
+  "categories": ["games-entertainment"],
+  "summary": {
+    "en-US": "Adds a Chaos Value column (quantity × price, in chaos) to the stash table on wealthyexile.com. Divine prices are converted using a rate worked out from the page. Click a value to copy it."
+  },
+  "description": {
+    "en-US": "Wealthy Exile shows each stash item's Quantity, Price and Total, but the Total is often in divines. This add-on adds a <b>Chaos Value</b> column next to Total that shows the same value in chaos, so you can compare items at a glance.\n\n<b>Features</b>\n<ul><li>Chaos Value = Quantity × Price, shown in chaos (for example 780c or 1,234c).</li><li>Prices in divines are converted using a divine rate worked out from your own stash page. You can also set your own rate.</li><li>Hover a value to see the working, for example \"65 × 12c = 780c\".</li><li>Click a value to copy the number to your clipboard.</li><li>Keeps up with the site as you sort, filter, search, scroll, switch tabs and re-sync.</li><li>An address bar button, shown only on Wealthy Exile, to turn the column on or off and set a manual divine rate.</li></ul>\n\n<b>Privacy</b>\nThe add-on collects no data and makes no network requests. It only runs on wealthyexile.com and cannot read or change any other website.\n\nThis is an unofficial add-on. It is not affiliated with Wealthy Exile or Grinding Gear Games.\n\nSource code: https://github.com/viexhd/wealthy-exile-chaos-value"
+  },
+  "homepage": {
+    "en-US": "https://github.com/viexhd/wealthy-exile-chaos-value"
+  },
+  "support_url": {
+    "en-US": "https://github.com/viexhd/wealthy-exile-chaos-value/issues"
+  },
+  "version": {
+    "license": "MIT",
+    "approval_notes": "The code is plain, unminified JavaScript with no build step, so no separate source upload is needed. Source: https://github.com/viexhd/wealthy-exile-chaos-value\n\nThe stash page on wealthyexile.com needs a Path of Exile account to sign in. To test without an account, clone the repository and open test/fixture.html in Firefox: it loads a saved copy of the real stash table and the same content script (src/parse.js and src/content.js), with buttons that mimic the site's sorting, row reuse and navigation.\n\nPermissions: only \"storage\" (on/off setting, manual rate and last detected rate) and host access to *://*.wealthyexile.com/*. No network requests, no remote code. Clicking a Chaos Value cell copies that number using navigator.clipboard.writeText from the click handler."
+  }
+}
