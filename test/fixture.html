@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chaos Value test page</title>
+    <style>
+      /* A rough copy of the site's dark Mantine table so the column can be checked by eye. */
+      :root {
+        --mantine-spacing-xs: 10px;
+        --mantine-spacing-md: 16px;
+        --mantine-font-size-sm: 14px;
+        --mantine-scale: 1;
+        --stash-table-header-top: 0px;
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        background: #1a1b1e;
+        color: #c1c2c5;
+        font: 14px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      }
+      h1 { font-size: 18px; margin: 0 0 8px; }
+      p { margin: 0 0 12px; color: #909296; }
+      .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+      .controls button, .controls input { font: inherit; padding: 4px 10px; background: #25262b; color: inherit; border: 1px solid #373a40; border-radius: 4px; }
+      .controls input[type='number'] { width: 90px; }
+      .controls label { display: inline-flex; gap: 6px; align-items: center; }
+      #status { font-family: ui-monospace, monospace; font-size: 12px; color: #909296; }
+      .mantine-Table-table { border-collapse: collapse; font-size: var(--mantine-font-size-sm); }
+      .mantine-Table-th, .mantine-Table-td { padding: 6px 10px; border: 1px solid #373a40; text-align: left; }
+      .mantine-Table-th { position: sticky; top: var(--stash-table-header-top); background: #1a1b1e; font-weight: 500; }
+      .mantine-Table-th button { all: unset; display: block; width: 100%; cursor: pointer; }
+      .mantine-Group-root { display: flex; align-items: center; gap: 8px; justify-content: var(--group-justify, flex-start); }
+      .mantine-Text-root { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .mantine-Table-tr[data-hover]:hover { background: #25262b; }
+      .ItemsTable_itemNameCell__wIWgh { display: flex; gap: 6px; align-items: center; }
+      img { display: none; }
+      a { color: inherit; text-decoration: none; }
+      [data-chaos-value] { color: #ffd43b; }
+    </style>
+  </head>
+  <body>
+    <h1>Chaos Value test page</h1>
+    <p>Loads the saved stash table and the real content script. The buttons copy what the site does.</p>
+
+    <div class="controls">
+      <label><input type="checkbox" id="enabled" checked /> Column on</label>
+      <label>Manual rate <input type="number" id="override" min="0" step="any" placeholder="none" /></label>
+      <button type="button" id="clear">Clear rate</button>
+      <button type="button" id="sort">Sort (reverse rows)</button>
+      <button type="button" id="recycle">Reuse a row (virtual scroll)</button>
+      <button type="button" id="rerender">Re-render table</button>
+      <button type="button" id="route">Leave /stash</button>
+    </div>
+    <div id="status"></div>
+
+    <div class="WeTable_scrollArea__F40_6" id="mount"></div>
+
+    <script>
+      // Pretend to be on the stash page (the content script reads this only on this test page).
+      window.chaosValueTestPath = '/stash';
+
+      // Small stand-in for browser.storage so the content script runs outside the extension.
+      (function () {
+        const data = {};
+        const listeners = [];
+        const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
+        window.browser = {
+          storage: {
+            local: {
+              get(defaults) {
+                const out = {};
+                for (const [k, v] of Object.entries(defaults || {})) out[k] = k in data ? clone(data[k]) : v;
+                return Promise.resolve(out);
+              },
+              set(values) {
+                const changes = {};
+                for (const [k, v] of Object.entries(values)) {
+                  changes[k] = { oldValue: clone(data[k]), newValue: clone(v) };
+                  data[k] = clone(v);
+                }
+                setTimeout(() => listeners.forEach((fn) => fn(changes, 'local')), 0);
+                return Promise.resolve();
+              },
+            },
+            onChanged: { addListener: (fn) => listeners.push(fn) },
+          },
+        };
+        window.testStorage = data;
+      })();
+    </script>
+    <script src="fixture-data.js"></script>
+    <script>
+      const mount = document.getElementById('mount');
+      function renderTable() {
+        // Test page only: the fixture is trusted, local HTML.
+        mount.innerHTML = window.STASH_TABLE_HTML;
+      }
+      renderTable();
+    </script>
+    <script src="../src/parse.js"></script>
+    <script src="../src/content.js"></script>
+    <script>
+      const local = browser.storage.local;
+      const $ = (id) => document.getElementById(id);
+      const tbody = () => mount.querySelector('tbody');
+
+      $('enabled').addEventListener('change', (e) => local.set({ enabled: e.target.checked }));
+      $('override').addEventListener('input', (e) => {
+        const v = Number(e.target.value);
+        local.set({ rateOverride: e.target.value && v > 0 ? v : null });
+      });
+      $('clear').addEventListener('click', () => {
+        $('override').value = '';
+        local.set({ rateOverride: null });
+      });
+
+      // Sorting: the site re-orders its own rows. Our cells travel with their rows.
+      $('sort').addEventListener('click', () => {
+        const rows = Array.from(tbody().rows);
+        const first = rows.shift();
+        const last = rows.pop();
+        rows.reverse().forEach((r) => tbody().insertBefore(r, last));
+        tbody().insertBefore(first, tbody().firstChild);
+      });
+
+      // Virtual scrolling: the site reuses a row element and swaps its text in place.
+      $('recycle').addEventListener('click', () => {
+        const row = tbody().rows[1];
+        const cells = Array.from(row.cells).filter((c) => !c.hasAttribute('data-chaos-value'));
+        const p = (cell) => cell.querySelector('p') || cell;
+        p(cells[1]).textContent = 'Recycled Row';
+        p(cells[3]).textContent = '1,000';
+        p(cells[4]).textContent = '2.5c';
+        cells[5].textContent = '2,500c';
+      });
+
+      $('rerender').addEventListener('click', renderTable);
+
+      $('route').addEventListener('click', (e) => {
+        const leaving = window.chaosValueTestPath === '/stash';
+        window.chaosValueTestPath = leaving ? '/economy' : '/stash';
+        e.target.textContent = leaving ? 'Back to /stash' : 'Leave /stash';
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      });
+
+      setInterval(() => {
+        const s = window.testStorage;
+        const cells = document.querySelectorAll('[data-chaos-value]').length;
+        $('status').textContent =
+          `path ${window.chaosValueTestPath} | detected rate ${s.detectedRate ?? 'none'} from ${s.detectedSamples ?? 0} rows | ` +
+          `manual rate ${s.rateOverride ?? 'none'} | added cells ${cells}`;
+      }, 200);
+    </script>
+  </body>
+</html>
