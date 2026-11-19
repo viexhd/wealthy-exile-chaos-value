@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chaos Value</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <h1>Chaos Value</h1>
+
+    <label class="toggle">
+      <input type="checkbox" id="enabled" checked />
+      <span>Show the Chaos Value column</span>
+    </label>
+
+    <section>
+      <h2>Detected divine rate</h2>
+      <p id="detected" class="value">Not detected yet</p>
+      <p id="detected-note" class="note">Open your stash page to work it out.</p>
+    </section>
+
+    <section>
+      <h2><label for="override">Manual divine rate</label></h2>
+      <div class="row">
+        <input type="number" id="override" min="0" step="any" inputmode="decimal" placeholder="e.g. 216" />
+        <span class="unit">c</span>
+        <button type="button" id="clear">Clear</button>
+      </div>
+      <p id="override-note" class="note">Leave empty to use the detected rate.</p>
+    </section>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
