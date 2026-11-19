@@ -12,6 +12,7 @@ const {
   inferDivineRate,
   computeChaosValue,
   formatChaos,
+  copyText,
   formatNumber,
   findColumns,
   isStashPath,
@@ -130,6 +131,16 @@ test('formatChaos uses whole chaos with separators, and 1 decimal under 10c', ()
   assert.equal(formatChaos(0.04), '0.0c');
   assert.equal(formatChaos(9.96), '10c');
   assert.equal(formatChaos(10), '10c');
+});
+
+test('copyText gives the shown value as a plain number', () => {
+  assert.equal(copyText(780), '780');
+  assert.equal(copyText(1234.4), '1234');
+  assert.equal(copyText(1234567.6), '1234568');
+  assert.equal(copyText(5.74), '5.7');
+  assert.equal(copyText(9.96), '10');
+  assert.equal(copyText(null), null);
+  assert.equal(copyText(NaN), null);
 });
 
 test('formatNumber keeps up to 2 decimals and adds separators', () => {

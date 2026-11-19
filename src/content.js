@@ -13,6 +13,8 @@
   const ext = typeof browser !== 'undefined' && browser.storage ? browser : null;
 
   const MARK = 'data-chaos-value';
+  const COPY_ATTR = 'data-chaos-copy';
+  const TOAST_MS = 1200;
   const HEADER_LABEL = 'Chaos Value';
   const DEBOUNCE_MS = 60;
   const MAX_WAIT_MS = 250;
@@ -142,19 +144,23 @@
     if (th.previousElementSibling !== totalTh) totalTh.after(th);
   }
 
-  function copyLook(from, to) {
+  function copyLook(from, to, extraStyle) {
     for (const attr of Array.from(from.attributes)) {
-      if (attr.name === 'id' || attr.name === MARK || attr.name === 'title') continue;
-      if (to.getAttribute(attr.name) !== attr.value) to.setAttribute(attr.name, attr.value);
+      if (attr.name === 'id' || attr.name === 'title' || attr.name.startsWith('data-chaos')) continue;
+      let value = attr.value;
+      if (attr.name === 'style' && extraStyle) value = `${value.replace(/;?\s*$/, ';')} ${extraStyle}`;
+      if (to.getAttribute(attr.name) !== value) to.setAttribute(attr.name, value);
     }
   }
 
   function cellContent(data, rate, rateSource) {
-    if (!data.priceText) return { text: '', title: 'This item has no price.' };
+    if (!data.priceText) return { text: '', title: 'This item has no price.', copy: null };
     const result = P.computeChaosValue(data.quantity, data.price, rate);
     let title = result.title;
     if (result.value !== null && data.price.unit === 'd') title += ` ${rateSource}`;
-    return { text: result.text, title };
+    const copy = P.copyText(result.value);
+    if (copy !== null) title += '\nClick to copy.';
+    return { text: result.text, title, copy };
   }
 
   function ensureCell(data, rate, rateSource, info) {
@@ -168,9 +174,10 @@
       td = document.createElement(totalTd.tagName);
       td.setAttribute(MARK, 'cell');
     }
-    copyLook(totalTd, td);
-
-    const { text, title } = cellContent(data, rate, rateSource);
+    const { text, title, copy } = cellContent(data, rate, rateSource);
+    copyLook(totalTd, td, copy === null ? '' : 'cursor: pointer;');
+    if (copy === null) td.removeAttribute(COPY_ATTR);
+    else if (td.getAttribute(COPY_ATTR) !== copy) td.setAttribute(COPY_ATTR, copy);
     if (td.textContent !== text) td.textContent = text;
     if (td.title !== title) td.title = title;
     if (td.previousElementSibling !== totalTd) totalTd.after(td);
@@ -277,7 +284,70 @@
     if ('rateOverride' in values) settings.rateOverride = validRate(values.rateOverride);
   }
 
+  /** A small note by the cursor that fades out, so the table itself is never changed. */
+  function showToast(message, x, y) {
+    document.querySelectorAll(`[${MARK}="toast"]`).forEach((el) => el.remove());
+    const toast = document.createElement('div');
+    toast.setAttribute(MARK, 'toast');
+    toast.setAttribute('role', 'status');
+    toast.textContent = message;
+    Object.assign(toast.style, {
+      position: 'fixed',
+      left: `${x + 12}px`,
+      top: `${y - 32}px`,
+      zIndex: '2147483647',
+      padding: '4px 8px',
+      borderRadius: '4px',
+      background: 'rgba(20, 21, 23, 0.92)',
+      color: '#ffffff',
+      font: '12px/1.4 system-ui, sans-serif',
+      pointerEvents: 'none',
+      transition: 'opacity 200ms ease',
+    });
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+    }, TOAST_MS - 200);
+    setTimeout(() => toast.remove(), TOAST_MS);
+  }
+
+  function onClick(event) {
+    const cell = event.target instanceof Element ? event.target.closest(`[${MARK}="cell"]`) : null;
+    if (!cell) return;
+    // Keep the click away from the site, so it does not also act on the row.
+    event.stopPropagation();
+    const value = cell.getAttribute(COPY_ATTR);
+    if (!value) return;
+    const { clientX: x, clientY: y } = event;
+    const done = (ok) => showToast(ok ? `Copied ${value}` : 'Could not copy', x, y);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(value).then(() => done(true), () => done(copyWithSelection(value)));
+    } else {
+      done(copyWithSelection(value));
+    }
+  }
+
+  /** Older way to copy, used if the clipboard API is not available. */
+  function copyWithSelection(value) {
+    const area = document.createElement('textarea');
+    area.setAttribute(MARK, 'copy');
+    area.value = value;
+    area.setAttribute('readonly', '');
+    Object.assign(area.style, { position: 'fixed', top: '0', left: '0', opacity: '0' });
+    document.body.appendChild(area);
+    area.select();
+    let ok = false;
+    try {
+      ok = document.execCommand('copy');
+    } catch (e) {
+      ok = false;
+    }
+    area.remove();
+    return ok;
+  }
+
   function start() {
+    document.addEventListener('click', onClick, true);
     resumeObserver();
     window.addEventListener('popstate', schedule);
     setInterval(() => {

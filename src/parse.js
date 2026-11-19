@@ -64,6 +64,14 @@
     return `${wholeFormat.format(Math.round(value))}c`;
   }
 
+  /** The shown value as a plain number for the clipboard: "1234", or "5.7" under 10c. */
+  function copyText(value) {
+    if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+    const oneDp = Math.round(value * 10) / 10;
+    if (Math.abs(oneDp) < 10) return oneDp.toFixed(1);
+    return String(Math.round(value));
+  }
+
   /**
    * Returns { value, text, title }. value is null when it cannot be worked out,
    * in which case text is "?" and title explains why.
@@ -136,6 +144,7 @@
     inferDivineRate,
     computeChaosValue,
     formatChaos,
+    copyText,
     formatNumber,
     findColumns,
     isStashPath,
