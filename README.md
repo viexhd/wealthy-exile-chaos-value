@@ -1,12 +1,16 @@
 # Chaos Value for Wealthy Exile
 
+[![CI](https://github.com/viexhd/wealthy-exile-chaos-value/actions/workflows/ci.yml/badge.svg)](https://github.com/viexhd/wealthy-exile-chaos-value/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/viexhd/wealthy-exile-chaos-value)](https://github.com/viexhd/wealthy-exile-chaos-value/releases/latest)
+[![Licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+
 A small Firefox extension that adds a **Chaos Value** column to the stash table on [Wealthy Exile](https://wealthyexile.com).
 
 The site shows each item's Quantity, Price and Total, but the Total is often in divines. This extension adds a column to the right of Total that shows the same value in chaos, so you can compare items at a glance.
 
 ## Screenshot
 
-> Screenshot placeholder. Add an image at `docs/screenshot.png` and link it here.
+> Screenshot coming soon. To add one, save it as `docs/screenshot.png` and replace this line with `![The Chaos Value column on the Wealthy Exile stash page](docs/screenshot.png)`.
 
 ## What it does
 
@@ -15,6 +19,7 @@ The site shows each item's Quantity, Price and Total, but the Total is often in 
 - Prices in divines (for example `1.2d`) are converted to chaos with the divine rate.
 - Values are shown as whole chaos with thousands separators (`780c`, `1,234c`). Values under 10c show 1 decimal place (`5.7c`).
 - Hover over a value to see the working, for example `65 × 12c = 780c`.
+- Click a value to copy the number (for example `1234`, or `5.7` under 10c) so you can paste it anywhere. A small "Copied" note appears by your cursor.
 - The column copies the look of the Total column, so it fits in with the site.
 - The column keeps up with the site as you sort, filter, search, switch tabs, re-sync or scroll. It is removed when you leave the stash page and added again when you come back.
 - Columns are found by their header text (Quantity, Price, Total), so the extension keeps working if the site moves columns around.
@@ -49,20 +54,33 @@ A note on accuracy: prices on the site are rounded (for example `0.2c`), so very
 
 ## Install
 
+### From Firefox Add-ons (recommended)
+
+Once the add-on has passed Mozilla's review, install it from its Firefox Add-ons page:
+
+**https://addons.mozilla.org/firefox/addon/chaos-value-for-wealthy-exile/**
+
+Click **Add to Firefox**. Firefox keeps it up to date for you.
+
+### From a GitHub release
+
+1. Go to the [latest release](https://github.com/viexhd/wealthy-exile-chaos-value/releases/latest).
+2. If a signed `.xpi` file is attached, click it in Firefox (or drag it onto a Firefox window) and click **Add**.
+3. The `.zip` file attached to each release is unsigned. Release versions of Firefox only install signed add-ons, so use the zip for a temporary install (below), or in Firefox Developer Edition or Nightly with `xpinstall.signatures.required` set to `false` in `about:config`.
+
 ### Temporary install (for testing)
 
-1. Download or clone this repository.
+1. Download or clone this repository, or download the `.zip` from a release.
 2. In Firefox, go to `about:debugging#/runtime/this-firefox`.
 3. Click **Load Temporary Add-on...**.
-4. Pick the `manifest.json` file in the repository folder.
+4. Pick `manifest.json` in the repository folder, or the `.zip` file.
 
-The extension stays installed until you restart Firefox.
+The add-on stays installed until you restart Firefox.
 
-### Install from a release
+### If the column does not appear
 
-1. Go to the [Releases](https://github.com/viexhd/wealthy-exile-chaos-value/releases) page.
-2. If a signed `.xpi` file is attached, open it in Firefox (or drag it onto a Firefox window) and click **Add**.
-3. If only a `.zip` file is attached, it is unsigned. Release versions of Firefox only install signed add-ons, so either use the temporary install above (pick the `.zip` file instead of `manifest.json`), or use Firefox Developer Edition or Nightly with `xpinstall.signatures.required` set to `false` in `about:config`.
+- Reload the stash page. Tabs that were open before installing do not have the add-on yet.
+- Go to `about:addons`, click **Chaos Value for Wealthy Exile**, open the **Permissions** tab and make sure access to wealthyexile.com is turned on. Some Firefox versions leave this off until you allow it.
 
 Firefox 109 or newer is needed.
 
@@ -91,6 +109,16 @@ npm run build   # build a zip into dist/
 ```
 
 To check the column by eye without signing in, open `test/fixture.html` in Firefox. It loads a saved copy of the stash table (`fixtures/stash-table.html`) and the real content script, with buttons that copy what the site does (sorting, reusing rows, re-rendering, leaving the page). If you change the fixture, run `npm run fixture` to update `test/fixture-data.js`.
+
+### Releasing a new version
+
+1. Update `version` in both `manifest.json` and `package.json`.
+2. Add a section for the new version to `CHANGELOG.md`.
+3. Commit, then tag and push: `git tag v1.0.1 && git push origin main --tags`.
+
+The [Release workflow](.github/workflows/release.yml) then runs the tests and lint, builds the zip and creates a GitHub release with it. If the repository has the secrets `AMO_API_KEY` and `AMO_API_SECRET` (API credentials from [addons.mozilla.org](https://addons.mozilla.org/developers/addon/api/key/)), it also submits the version to Firefox Add-ons for review. The listing text for Firefox Add-ons is kept in `amo-metadata.json`.
+
+### Code layout
 
 The code is plain JavaScript with no frameworks and no build step:
 
