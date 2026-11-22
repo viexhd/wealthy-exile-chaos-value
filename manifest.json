@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Chaos Value for Wealthy Exile",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Adds a Chaos Value column (quantity × price, in chaos) to the Wealthy Exile stash table.",
   "author": "Isaac Foo Yong Quan",
   "homepage_url": "https://github.com/viexhd/wealthy-exile-chaos-value",
@@ -12,12 +12,21 @@
     "96": "icons/icon-96.png",
     "128": "icons/icon-128.png"
   },
-  "permissions": ["storage"],
-  "host_permissions": ["*://*.wealthyexile.com/*"],
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.wealthyexile.com/*"
+  ],
   "content_scripts": [
     {
-      "matches": ["*://*.wealthyexile.com/*"],
-      "js": ["src/parse.js", "src/content.js"],
+      "matches": [
+        "*://*.wealthyexile.com/*"
+      ],
+      "js": [
+        "src/parse.js",
+        "src/content.js"
+      ],
       "run_at": "document_idle"
     }
   ],
@@ -28,15 +37,22 @@
       "32": "icons/icon-32.png"
     },
     "default_popup": "popup/popup.html",
-    "show_matches": ["*://*.wealthyexile.com/*"]
+    "show_matches": [
+      "*://*.wealthyexile.com/*"
+    ]
   },
   "browser_specific_settings": {
     "gecko": {
       "id": "chaos-value@viexhd",
-      "strict_min_version": "109.0",
+      "strict_min_version": "140.0",
       "data_collection_permissions": {
-        "required": ["none"]
+        "required": [
+          "none"
+        ]
       }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0"
     }
   }
 }

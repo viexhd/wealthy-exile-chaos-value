@@ -10,6 +10,19 @@ All notable changes to this project are listed here. The format follows [Keep a 
 - Firefox Add-ons description is now plain text instead of HTML.
 - README now has a banner, a "how it works" image and quick links.
 
+## [1.1.0] - 2026-11-23
+
+### Changed
+
+- When the site's Total is in chaos, the Chaos Value now uses that Total. The site works it out from the exact price, so cheap items held in large numbers are no longer off (for example 960 × "0.04c" now shows 43c instead of 38c).
+- The divine rate now comes from the Divine Orb price shown on the page when there is one. The estimate from rows is used only when the page shows no Divine Orb price. The popup and tooltips say which was used.
+- Firefox 140 or newer is now needed (Firefox for Android 142 or newer). This is the current long-term support release, and it lets Firefox grant site access when the add-on is installed.
+
+### Added
+
+- Browser tests that drive the test page in headless Firefox, run in CI on every push.
+- A test that copied values are always digits only (no spaces, commas or "c"), ready to paste into the in-game market.
+
 ## [1.0.0] - 2026-11-19
 
 ### Added

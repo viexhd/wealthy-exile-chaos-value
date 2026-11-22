@@ -1,6 +1,6 @@
 {
   "name": "wealthy-exile-chaos-value",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Firefox extension that adds a Chaos Value column to the Wealthy Exile stash table",
   "author": "Isaac Foo Yong Quan",
@@ -11,6 +11,7 @@
   },
   "scripts": {
     "test": "node --test test/*.test.js",
+    "test:e2e": "node --test test/e2e/*.test.js",
     "lint": "npx web-ext lint",
     "start": "npx web-ext run --start-url https://wealthyexile.com/stash",
     "build": "npx web-ext build --overwrite-dest",
@@ -34,6 +35,7 @@
     ]
   },
   "devDependencies": {
+    "puppeteer-core": "^25.18.1",
     "web-ext": "^10.8.0"
   }
 }

@@ -75,8 +75,11 @@
   /**
    * Returns { value, text, title }. value is null when it cannot be worked out,
    * in which case text is "?" and title explains why.
+   *
+   * When the site's Total is already in chaos it is used as the value, because the site
+   * works it out from the unrounded price (960 × "0.04c" shows a Total of 43c, not 38c).
    */
-  function computeChaosValue(quantity, price, divineRate) {
+  function computeChaosValue(quantity, price, divineRate, total) {
     if (quantity == null) {
       return { value: null, text: '?', title: 'Could not read the quantity for this row.' };
     }
@@ -85,6 +88,16 @@
     }
     const qty = formatNumber(quantity);
     const unitPrice = `${formatNumber(price.value)}${price.unit}`;
+    if (total && total.unit === 'c') {
+      const value = total.value;
+      const text = formatChaos(value);
+      const working = `${qty} × ${unitPrice}`;
+      const agrees = price.unit === 'c' && formatChaos(quantity * price.value) === text;
+      const title = agrees
+        ? `${working} = ${text}`
+        : `${working} ≈ ${text}. This is the site's Total, because the price shown is rounded.`;
+      return { value, text, title };
+    }
     if (price.unit === 'c') {
       const value = quantity * price.value;
       const text = formatChaos(value);
@@ -96,7 +109,7 @@
         text: '?',
         title:
           'This price is in divines but no divine rate is available. ' +
-          'No row on the page has a chaos price with a total in divines. ' +
+          'The page shows no Divine Orb price, and no row has a chaos price with a total in divines. ' +
           'You can set a rate in the extension popup.',
       };
     }
@@ -107,6 +120,38 @@
       text,
       title: `${qty} × ${unitPrice} (${formatNumber(divineRate)}c per divine) = ${text}`,
     };
+  }
+
+  /**
+   * Reads the Divine Orb price from the site's economy links (the sidebar and the
+   * Divine Orb row both link to /economy/Divine%20Orb with a price such as "216c").
+   * links: [{ href, text }]. Returns the price in chaos, or null.
+   */
+  function divinePriceFromLinks(links) {
+    for (const link of links) {
+      let path;
+      try {
+        path = decodeURIComponent(String(link.href || '').split(/[?#]/)[0]);
+      } catch (e) {
+        continue;
+      }
+      if (!/\/economy\/Divine Orb$/i.test(path)) continue;
+      const price = parsePrice(link.text);
+      if (price && price.unit === 'c' && price.value > 0) return price.value;
+    }
+    return null;
+  }
+
+  /**
+   * Chooses the divine rate: a manual rate first, then the Divine Orb price shown on the
+   * page, then the estimate from rows. Returns { rate, source } where source is
+   * 'manual', 'page', 'rows' (with samples) or 'none'.
+   */
+  function pickDivineRate({ manual, pagePrice, rows }) {
+    if (manual > 0) return { rate: manual, source: 'manual' };
+    if (pagePrice > 0) return { rate: pagePrice, source: 'page' };
+    if (rows && rows.rate > 0) return { rate: rows.rate, source: 'rows', samples: rows.samples };
+    return { rate: null, source: 'none' };
   }
 
   function normaliseLabel(text) {
@@ -148,6 +193,8 @@
     formatNumber,
     findColumns,
     isStashPath,
+    divinePriceFromLinks,
+    pickDivineRate,
   };
 
   if (typeof module === 'object' && module.exports) {
