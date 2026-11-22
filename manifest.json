@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Chaos Value for Wealthy Exile",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Adds a Chaos Value column (quantity × price, in chaos) to the Wealthy Exile stash table.",
   "author": "Isaac Foo Yong Quan",
   "homepage_url": "https://github.com/viexhd/wealthy-exile-chaos-value",
