@@ -155,9 +155,10 @@
 
   function cellContent(data, rate, rateSource) {
     if (!data.priceText) return { text: '', title: 'This item has no price.', copy: null };
-    const result = P.computeChaosValue(data.quantity, data.price, rate);
+    const result = P.computeChaosValue(data.quantity, data.price, rate, data.total);
     let title = result.title;
-    if (result.value !== null && data.price.unit === 'd') title += ` ${rateSource}`;
+    const usedRate = data.price.unit === 'd' && !(data.total && data.total.unit === 'c');
+    if (result.value !== null && usedRate) title += ` ${rateSource}`;
     const copy = P.copyText(result.value);
     if (copy !== null) title += '\nClick to copy.';
     return { text: result.text, title, copy };
@@ -198,17 +199,42 @@
     }
   }
 
+  /** The Divine Orb price shown on the page (sidebar or table row), or null. */
+  function pageDivinePrice() {
+    const links = Array.from(document.querySelectorAll('a[href*="/economy/Divine"]'), (a) => ({
+      href: a.getAttribute('href'),
+      text: a.textContent,
+    }));
+    return P.divinePriceFromLinks(links);
+  }
+
+  /** The rate found on the page, without any manual override. */
   function detectedRate() {
     const values = Array.from(rateSamples.values());
-    return { rate: P.median(values), samples: values.length };
+    return P.pickDivineRate({
+      manual: null,
+      pagePrice: pageDivinePrice(),
+      rows: { rate: P.median(values), samples: values.length },
+    });
+  }
+
+  function describeSource(choice) {
+    if (choice.source === 'manual') return 'The divine rate was set by you in the popup.';
+    if (choice.source === 'page') return 'The divine rate is the Divine Orb price shown on the page.';
+    const n = choice.samples;
+    return `The divine rate was worked out from ${n} row${n === 1 ? '' : 's'}.`;
   }
 
   function publishDetected(detected) {
     const rate = detected.rate === null ? null : Math.round(detected.rate * 100) / 100;
-    if (published.rate === rate && published.samples === detected.samples) return;
-    published = { rate, samples: detected.samples };
+    const samples = detected.samples || 0;
+    const { source } = detected;
+    if (published.rate === rate && published.samples === samples && published.source === source) return;
+    published = { rate, samples, source };
     if (ext) {
-      ext.storage.local.set({ detectedRate: rate, detectedSamples: detected.samples }).catch(() => {});
+      ext.storage.local
+        .set({ detectedRate: rate, detectedSamples: samples, detectedSource: source })
+        .catch(() => {});
     }
   }
 
@@ -244,11 +270,10 @@
       const detected = detectedRate();
       publishDetected(detected);
 
-      const override = validRate(settings.rateOverride);
-      const rate = override || detected.rate;
-      const rateSource = override
-        ? 'The divine rate was set by you in the popup.'
-        : `The divine rate was worked out from ${detected.samples} row${detected.samples === 1 ? '' : 's'}.`;
+      const manual = validRate(settings.rateOverride);
+      const choice = manual ? P.pickDivineRate({ manual }) : detected;
+      const rate = choice.rate;
+      const rateSource = describeSource(choice);
 
       for (const { info, items, spacers } of perTable) {
         ensureHeader(info);

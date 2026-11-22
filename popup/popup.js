@@ -18,10 +18,13 @@ function validRate(value) {
   return value !== null && value !== '' && Number.isFinite(n) && n > 0 ? n : null;
 }
 
-function showDetected(rate, samples) {
+function showDetected(rate, samples, source) {
   if (validRate(rate)) {
     els.detected.textContent = `${numberFormat.format(rate)}c`;
-    els.detectedNote.textContent = `Median of ${samples} row${samples === 1 ? '' : 's'} priced in chaos with a total in divines.`;
+    els.detectedNote.textContent =
+      source === 'page'
+        ? 'The Divine Orb price shown on Wealthy Exile.'
+        : `Median of ${samples} row${samples === 1 ? '' : 's'} priced in chaos with a total in divines.`;
   } else {
     els.detected.textContent = 'Not detected yet';
     els.detectedNote.textContent = 'Open your stash page to work it out.';
@@ -42,9 +45,15 @@ function showEnabled(enabled) {
 }
 
 async function load() {
-  const values = await storage.get({ enabled: true, rateOverride: null, detectedRate: null, detectedSamples: 0 });
+  const values = await storage.get({
+    enabled: true,
+    rateOverride: null,
+    detectedRate: null,
+    detectedSamples: 0,
+    detectedSource: null,
+  });
   showEnabled(values.enabled);
-  showDetected(values.detectedRate, values.detectedSamples);
+  showDetected(values.detectedRate, values.detectedSamples, values.detectedSource);
   showOverride(values.rateOverride);
 }
 
@@ -71,8 +80,10 @@ browser.storage.onChanged.addListener((changes, area) => {
   if (area !== 'local') return;
   if (changes.enabled) showEnabled(changes.enabled.newValue);
   if (changes.rateOverride) showOverride(changes.rateOverride.newValue);
-  if (changes.detectedRate || changes.detectedSamples) {
-    storage.get({ detectedRate: null, detectedSamples: 0 }).then((v) => showDetected(v.detectedRate, v.detectedSamples));
+  if (changes.detectedRate || changes.detectedSamples || changes.detectedSource) {
+    storage
+      .get({ detectedRate: null, detectedSamples: 0, detectedSource: null })
+      .then((v) => showDetected(v.detectedRate, v.detectedSamples, v.detectedSource));
   }
 });
 
