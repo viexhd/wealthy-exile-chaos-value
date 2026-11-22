@@ -21,3 +21,11 @@ jobs:
       - run: npm test
       - run: npm run lint
       - run: npm run build
+
+      # Browser tests: drive test/fixture.html in headless Firefox (latest stable release).
+      - name: Install Firefox
+        run: |
+          path=$(npx --yes @puppeteer/browsers@3.2.7 install firefox@stable --path "$RUNNER_TEMP/browsers" --format "{{path}}" | tail -n 1)
+          echo "Firefox at $path"
+          echo "FIREFOX_PATH=$path" >> "$GITHUB_ENV"
+      - run: npm run test:e2e
